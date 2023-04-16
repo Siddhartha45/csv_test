@@ -1,0 +1,84 @@
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+td {
+    text-align: center;
+}
+
+.link {
+    margin-right: 10px;
+}
+</style>
+
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+</form>
+
+
+<form method="get" action="{% url 'search_employee' %}">
+    <input type="text" name="search" placeholder="Search by name">
+    <button type="submit">Search</button>
+</form>
+
+
+<form method="get" action="{% url 'employee' %}">
+    <label for="sort_by">Sort By:</label>
+    <select id="sort_by" name="sort_by">
+        <option value="first_name">First Name</option>
+        <option value="last_name">Last Name</option>
+        <option value="-dob">Date of Birth</option>
+        <option value="salary">Salary</option>
+    </select>
+    <button type="submit">Sort</button>
+</form>
+    
+
+<table style="width:30%">
+    <thead>
+    <tr>
+        <th>Full Name</th>
+        <th>Age</th>
+        <th>Salary</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for employee in page_obj %}
+        <tr>
+        <td>{{ employee.full_name }}</td>
+        <td>{{ employee.age }}</td>
+        <td>${{ employee.salary }}</td>
+        <td>
+            <a href="{% url 'edit_employee' pk=employee.id %}" style="display: inline-block; margin-right: 10px;">Edit</a>
+            <a href="{% url 'delete_employee' pk=employee.id %}" style="display: inline-block;">Delete</a>
+        </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a class="link" href="?page=1{% if sort_column %}&sort_by={{ sort_column }}{% endif %}">&laquo; first</a>
+            <a class="link" href="?page={{ page_obj.previous_page_number }}{% if sort_column %}&sort_by={{ sort_column }}{% endif %}">previous</a>
+        {% endif %}
+
+        <span class="current-page">
+            Page {{ page_obj.number }} of {{ num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a class="link" href="?page={{ page_obj.next_page_number }}{% if sort_column %}&sort_by={{ sort_column }}{% endif %}">next</a>
+            <a class="link" href="?page={{ num_pages }}{% if sort_column %}&sort_by={{ sort_column }}{% endif %}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+
